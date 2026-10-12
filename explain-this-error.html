@@ -1,0 +1,519 @@
+<style>
+  :root{
+    --paper:#EAEDE5;
+    --paper-raised:#F4F6EF;
+    --ink:#22301F;
+    --ink-soft:#5B6B54;
+    --amber:#C98A2B;
+    --coral:#B8483F;
+    --teal:#3F6E64;
+    --line:#C7CDB8;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --slab: 'Roboto Slab', Georgia, serif;
+    --body: 'Work Sans', -apple-system, sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;800&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; padding:0;}
+  #eterr-root{
+    background:var(--paper); color:var(--ink); font-family:var(--body);
+    min-height:100%; padding:0 0 40px;
+    background-image: radial-gradient(circle at 1px 1px, rgba(34,48,31,0.06) 1px, transparent 0);
+    background-size:20px 20px;
+  }
+  .eterr-wrap{max-width:540px; margin:0 auto; padding:0 16px;}
+
+  .eterr-page{display:none;}
+  .eterr-page.active{display:block; animation:eterr-fade .35s ease;}
+  @keyframes eterr-fade{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  .eterr-eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+  .eterr-eyebrow::before{content:""; width:6px; height:6px; background:var(--amber); border-radius:50%;}
+  .eterr-title{font-family:var(--slab); font-weight:800; font-size:clamp(26px,7vw,36px); line-height:1.08; margin:0 0 8px; letter-spacing:-0.01em;}
+  .eterr-title em{font-style:italic; color:var(--coral);}
+
+  #eterr-page-intro{padding-top:36px;}
+  .eterr-intro-lede{font-size:15px; color:var(--ink-soft); line-height:1.6; margin:0 0 20px; max-width:50ch;}
+  .eterr-badge{display:inline-block; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--teal); border:1px solid var(--teal); border-radius:20px; padding:5px 10px; margin-bottom:16px;}
+
+  .eterr-howto{background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:0; margin-bottom:24px;}
+  .eterr-howto-item{display:flex; gap:14px; padding:16px 18px; border-bottom:1px dashed var(--line);}
+  .eterr-howto-item:last-child{border-bottom:none;}
+  .eterr-howto-mark{font-family:var(--mono); font-size:12px; color:var(--amber); font-weight:600; flex-shrink:0; width:20px;}
+  .eterr-howto-body h3{margin:0 0 4px; font-family:var(--slab); font-weight:600; font-size:15px;}
+  .eterr-howto-body p{margin:0; font-size:13px; color:var(--ink-soft); line-height:1.55;}
+
+  button#eterr-start{width:100%; font-family:var(--slab); font-weight:600; font-size:16px; background:var(--ink); color:var(--paper-raised); border:none; border-radius:8px; padding:16px; cursor:pointer; transition:transform .12s ease, background .12s ease;}
+  button#eterr-start:hover{background:#33452E;}
+  button#eterr-start:active{transform:scale(0.98);}
+  .eterr-intro-foot{font-family:var(--mono); font-size:11px; color:var(--ink-soft); text-align:center; margin-top:18px;}
+
+  #eterr-page-tool{padding-top:22px;}
+  .eterr-toolhead{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+  button.eterr-back{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:12.5px; color:var(--ink); background:var(--paper-raised); border:1px solid var(--line); border-radius:20px; cursor:pointer; padding:9px 14px 9px 10px; flex-shrink:0; transition:border-color .15s, background .15s;}
+  button.eterr-back:hover{border-color:var(--teal); background:var(--paper);}
+  button.eterr-back svg{flex-shrink:0;}
+  .eterr-toolhead h2{font-family:var(--slab); font-weight:800; font-size:18px; margin:0; flex:1;}
+
+  /* Language selector */
+  .eterr-lang-selector{margin-bottom:16px; position:relative;}
+  button.eterr-lang-btn{width:100%; text-align:left; font-family:var(--mono); font-size:12px; background:var(--paper-raised); border:1px solid var(--line); border-radius:6px; padding:10px 12px; cursor:pointer; color:var(--ink); transition:border-color .15s;}
+  button.eterr-lang-btn:hover{border-color:var(--teal);}
+  .eterr-lang-dropdown{position:absolute; top:100%; left:0; right:0; background:var(--paper-raised); border:1px solid var(--line); border-radius:6px; margin-top:4px; z-index:100; overflow:hidden;}
+  button.eterr-lang-option{width:100%; text-align:left; font-family:var(--mono); font-size:12px; background:none; border:none; padding:10px 12px; cursor:pointer; color:var(--ink); transition:background .12s;}
+  button.eterr-lang-option:hover{background:var(--paper);}
+  button.eterr-lang-option.active{background:var(--ink); color:var(--paper-raised);}
+
+  .eterr-tabs{display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-bottom:16px; background:var(--paper-raised);}
+  button.eterr-tab{flex:1; text-align:center; font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; padding:11px 6px; cursor:pointer; color:var(--ink-soft); background:none; border:none; transition:color .2s;}
+  button.eterr-tab.active{background:var(--ink); color:var(--paper-raised);}
+  button.eterr-tab:focus-visible{outline:2px solid var(--amber); outline-offset:-2px;}
+
+  /* Dropzone */
+  .eterr-dropzone{border:2px dashed var(--line); border-radius:6px; padding:40px 20px; text-align:center; cursor:pointer; background:var(--paper-raised); transition:border-color .2s, background .2s;}
+  .eterr-dropzone:hover{border-color:var(--teal); background:var(--paper);}
+  .eterr-dropzone p{margin:0; font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+  #eterr-screenshot-preview{margin-top:12px;}
+  #eterr-screenshot-preview img{max-width:100%; border:1px solid var(--line); border-radius:6px;}
+
+  .eterr-mode{display:none;}
+  .eterr-mode.active{display:block; animation:eterr-fade .25s;}
+
+  .eterr-label{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  button.eterr-example-link{font-family:var(--mono); font-size:11px; color:var(--teal); background:var(--paper); border:1px solid var(--line); border-radius:14px; cursor:pointer; text-transform:none; letter-spacing:0; padding:6px 11px; transition:border-color .15s, background .15s;}
+  button.eterr-example-link:hover{border-color:var(--teal); background:#EAF2EF;}
+
+  textarea#eterr-input{width:100%; min-height:140px; resize:vertical; background:#1F241C; color:#E8E4D6; font-family:var(--mono); font-size:13px; line-height:1.6; border:1px solid var(--ink); border-radius:6px; padding:14px 16px; outline:none;}
+  textarea#eterr-input:focus{outline:2px solid var(--amber); outline-offset:2px;}
+  .eterr-charcount{font-family:var(--mono); font-size:10px; color:var(--ink-soft); text-align:right; margin-top:6px;}
+
+  .eterr-error-list{max-height:350px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; background:var(--paper-raised);}
+  .eterr-error-item{padding:12px 14px; border-bottom:1px dashed var(--line); cursor:pointer; transition:background .12s;}
+  .eterr-error-item:hover{background:var(--paper);}
+  .eterr-error-item:last-child{border-bottom:none;}
+  .eterr-error-name{font-family:var(--mono); font-weight:600; color:var(--coral); font-size:13px;}
+  .eterr-error-desc{font-size:12px; color:var(--ink-soft); margin-top:3px; line-height:1.4;}
+  .eterr-error-lang{font-family:var(--mono); font-size:10px; color:var(--teal); margin-top:4px;}
+
+  button#eterr-submit{width:100%; font-family:var(--slab); font-weight:600; font-size:16px; background:var(--ink); color:var(--paper-raised); border:none; border-radius:8px; padding:15px; margin-top:16px; cursor:pointer; transition:transform .12s, background .12s, opacity .15s;}
+  button#eterr-submit:hover:not(:disabled){background:#33452E;}
+  button#eterr-submit:active:not(:disabled){transform:scale(0.98);}
+  button#eterr-submit:disabled{opacity:.45; cursor:not-allowed;}
+
+  .eterr-status{font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-top:10px; min-height:16px; text-align:center;}
+  .eterr-status.err{color:var(--coral);}
+
+  #eterr-result{margin-top:20px;}
+  .eterr-specimen{background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; opacity:0; transform:translateY(6px); animation:eterr-in .4s ease forwards;}
+  @keyframes eterr-in{ to{opacity:1; transform:translateY(0);} }
+
+  .eterr-specimen-head{padding:18px 18px 14px; border-bottom:1px dashed var(--line);}
+  .eterr-species{font-family:var(--slab); font-style:italic; font-weight:600; font-size:18px; color:var(--coral); margin:0 0 6px;}
+  .eterr-plain{font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.55;}
+  .eterr-stamp{display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:.08em; color:var(--teal); border:1.5px solid var(--teal); border-radius:20px; padding:4px 9px; margin-bottom:8px;}
+
+  .eterr-section{padding:16px 18px; border-bottom:1px dashed var(--line);}
+  .eterr-section:last-child{border-bottom:none;}
+  .eterr-section h3{font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--amber); margin:0 0 8px;}
+  .eterr-section p{margin:0; font-size:14px; line-height:1.65; color:var(--ink);}
+  .eterr-code-wrap{position:relative; margin-top:10px;}
+  .eterr-code{background:#1F241C; color:#E8E4D6; font-family:var(--mono); font-size:11.5px; line-height:1.6; padding:12px 14px; padding-right:50px; border-radius:6px; overflow-x:auto; white-space:pre; margin:0; border:1px solid rgba(0,0,0,.3);}
+  button.eterr-copy-code{position:absolute; top:8px; right:8px; font-family:var(--mono); font-size:9px; color:#E8E4D6; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:4px 8px; cursor:pointer; transition:background .15s;}
+  button.eterr-copy-code:hover{background:rgba(255,255,255,.16);}
+  button.eterr-copy-code.copied{color:#8FD6A8; border-color:#8FD6A8;}
+  button.eterr-copy-all{display:inline-block; font-family:var(--mono); font-size:10px; color:var(--teal); background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:6px 11px; cursor:pointer; transition:border-color .15s, color .15s; margin-top:8px;}
+  button.eterr-copy-all:hover{border-color:var(--teal); color:var(--teal);}
+
+  .eterr-foot{font-family:var(--mono); font-size:10px; color:var(--ink-soft); text-align:center; margin-top:24px;}
+</style>
+
+<div id="eterr-root">
+  <div class="eterr-wrap">
+
+    <!-- PAGE 1: INTRO -->
+    <div class="eterr-page active" id="eterr-page-intro">
+      <div class="eterr-eyebrow">Error Guide</div>
+      <h1 class="eterr-title">Explain This <em>Error</em></h1>
+      <div class="eterr-badge">Offline Edition</div>
+      <p class="eterr-intro-lede">50+ common programming errors explained in plain English. No internet. No API key. Works anywhere.</p>
+
+      <div class="eterr-howto">
+        <div class="eterr-howto-item">
+          <span class="eterr-howto-mark">01</span>
+          <div class="eterr-howto-body">
+            <h3>Paste your error</h3>
+            <p>Copy the error message and paste it in. Instant match.</p>
+          </div>
+        </div>
+        <div class="eterr-howto-item">
+          <span class="eterr-howto-mark">02</span>
+          <div class="eterr-howto-body">
+            <h3>Or browse errors</h3>
+            <p>Scroll through all 50+ errors, organized by language.</p>
+          </div>
+        </div>
+        <div class="eterr-howto-item">
+          <span class="eterr-howto-mark">03</span>
+          <div class="eterr-howto-body">
+            <h3>Get the fix</h3>
+            <p>See what broke, why, and exactly how to fix it.</p>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" id="eterr-start">Start</button>
+      <div class="eterr-intro-foot">Works offline. Works everywhere. Works now.</div>
+    </div>
+
+    <!-- PAGE 2: TOOL -->
+    <div class="eterr-page" id="eterr-page-tool">
+      <div class="eterr-toolhead">
+        <button type="button" class="eterr-back" id="eterr-back">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <h2>Find an error</h2>
+      </div>
+
+      <div class="eterr-lang-selector">
+        <label class="eterr-label">Language</label>
+        <button type="button" class="eterr-lang-btn" id="eterr-lang-btn">Auto-detect</button>
+        <div class="eterr-lang-dropdown" id="eterr-lang-dropdown" style="display:none;">
+          <button class="eterr-lang-option" data-lang="auto">Auto-detect</button>
+          <button class="eterr-lang-option" data-lang="Python">Python</button>
+          <button class="eterr-lang-option" data-lang="JavaScript">JavaScript</button>
+          <button class="eterr-lang-option" data-lang="Java">Java</button>
+        </div>
+      </div>
+
+      <div class="eterr-tabs">
+        <button type="button" class="eterr-tab active" data-mode="text">Text</button>
+        <button type="button" class="eterr-tab" data-mode="screenshot">Screenshot</button>
+        <button type="button" class="eterr-tab" data-mode="file">File</button>
+      </div>
+
+      <div class="eterr-mode active" id="eterr-mode-text">
+        <label class="eterr-label" for="eterr-input">
+          <span>Paste your error message</span>
+          <button type="button" class="eterr-example-link" id="eterr-example-btn">Try an example</button>
+        </label>
+        <textarea id="eterr-input" placeholder="Paste any error..." maxlength="5000"></textarea>
+        <div class="eterr-charcount" id="eterr-charcount">0 / 5,000</div>
+      </div>
+
+      <div class="eterr-mode" id="eterr-mode-screenshot">
+        <label class="eterr-label">Upload error screenshot</label>
+        <div class="eterr-dropzone" id="eterr-screenshot-zone">
+          <input type="file" id="eterr-screenshot-input" accept="image/*" style="display:none;">
+          <p>Click or drag image here</p>
+        </div>
+        <div id="eterr-screenshot-preview"></div>
+      </div>
+
+      <div class="eterr-mode" id="eterr-mode-file">
+        <label class="eterr-label">Upload error file</label>
+        <div class="eterr-dropzone" id="eterr-file-zone">
+          <input type="file" id="eterr-file-input" accept=".txt,.log,.py,.js,.java" style="display:none;">
+          <p>Click or drag file here</p>
+        </div>
+        <div id="eterr-file-content"></div>
+        <div style="margin-top:10px; display:flex; gap:8px;">
+          <button type="button" class="eterr-example-link" id="eterr-file-python-btn">Python example</button>
+          <button type="button" class="eterr-example-link" id="eterr-file-java-btn">Java example</button>
+        </div>
+      </div>
+
+      <button type="button" id="eterr-submit">Find explanation</button>
+      <div class="eterr-status" id="eterr-status"></div>
+      <div id="eterr-result"></div>
+
+      <div class="eterr-foot">Offline. Complete. Free.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  // 50+ common errors database
+  var errorDB = [
+    // PYTHON
+    {id:"NameError",lang:"Python",pattern:["NameError","is not defined"],title:"NameError",plain:"You used a variable that doesn't exist.",broke:"Python looked for the variable but couldn't find it. Either you haven't created it yet, misspelled it, or it's out of scope.",why:"Forgetting to assign a variable before using it. Misspelling (Python is case-sensitive: 'hello' ≠ 'Hello'). Using a variable outside its scope.",fix:"Check the spelling (case-sensitive). Create the variable before using it. Look for typos.",code:"# WRONG\nprint(hello)\n\n# FIXED\nhello = 'world'\nprint(hello)"},
+    {id:"TypeError",lang:"Python",pattern:["TypeError","unsupported operand"],title:"TypeError",plain:"You tried to combine incompatible data types.",broke:"Can't add a string and number, or call a non-function as a function.",why:"Mixing data types. Forgetting that '5' (string) is different from 5 (number).",fix:"Convert types: int(), str(), float(). Make sure you're calling real functions.",code:"# WRONG\nresult = '5' + 5\n\n# FIXED\nresult = int('5') + 5\nprint(result)  # 10"},
+    {id:"IndexError",lang:"Python",pattern:["IndexError","list index out of range"],title:"IndexError",plain:"You tried to access a list item that doesn't exist.",broke:"Python lists start at 0. If a list has 5 items, positions are 0,1,2,3,4. Position 5 doesn't exist.",why:"Forgetting 0-indexing. Using the wrong index. Accessing beyond list length.",fix:"Remember: first item = index 0. Check index < len(list). Use len() to find length.",code:"# WRONG\nitems = ['a','b','c']\nprint(items[3])\n\n# FIXED\nprint(items[0])  # First\nprint(items[2])  # Last"},
+    {id:"SyntaxError",lang:"Python",pattern:["SyntaxError","invalid syntax"],title:"SyntaxError",plain:"Your code breaks Python's grammar rules.",broke:"Missing colons, unmatched parentheses, wrong indentation, broken strings.",why:"Missing punctuation. Wrong indentation. Misspelled keywords. Unclosed quotes.",fix:"Check the line Python points to. Look for: missing colons (:), unmatched parentheses (), wrong indentation.",code:"# WRONG\nif x > 5\n    print(x)\n\n# FIXED\nif x > 5:\n    print(x)"},
+    {id:"ZeroDivisionError",lang:"Python",pattern:["ZeroDivisionError","division by zero"],title:"ZeroDivisionError",plain:"You divided by zero.",broke:"Can't divide by zero mathematically.",why:"Dividing by zero directly or by a variable that equals zero.",fix:"Check if divisor is zero before dividing: if divisor != 0: result = x / divisor",code:"# WRONG\nresult = 10 / 0\n\n# FIXED\nif divisor != 0:\n    result = 10 / divisor"},
+    {id:"IndentationError",lang:"Python",pattern:["IndentationError","unexpected indent"],title:"IndentationError",plain:"Your indentation is wrong.",broke:"Python uses indentation to show code blocks. Indentation doesn't match.",why:"Mixing tabs and spaces. Inconsistent indentation. Forgetting to indent after ':'.",fix:"Use 4 spaces per level (not tabs). After ':', next line must be indented.",code:"# WRONG\ndef func():\nprint('hi')\n\n# FIXED\ndef func():\n    print('hi')"},
+    {id:"ImportError",lang:"Python",pattern:["ImportError","No module named"],title:"ImportError",plain:"Python can't find the module you're trying to import.",broke:"Module not installed or can't find it.",why:"Package not installed. Typo in module name.",fix:"Install the package: pip install package_name. Check spelling.",code:"# WRONG\nimport numpyy\n\n# FIXED\nimport numpy\n# Run: pip install numpy"},
+    {id:"KeyError",lang:"Python",pattern:["KeyError"],title:"KeyError",plain:"The dictionary key doesn't exist.",broke:"Tried to access a key that's not in the dictionary.",why:"Using wrong key name. Typo in key. Key was deleted.",fix:"Check the key exists: if key in dict: value = dict[key]. Use dict.get(key, default).",code:"# WRONG\ndata = {'name': 'John'}\nprint(data['age'])\n\n# FIXED\nif 'age' in data:\n    print(data['age'])"},
+    {id:"ValueError",lang:"Python",pattern:["ValueError"],title:"ValueError",plain:"The value has the wrong type or format.",broke:"Tried to convert a string to int but it's not a valid number.",why:"Converting invalid values. Wrong type for function.",fix:"Check the value before converting. Use try/except for safe conversion.",code:"# WRONG\nage = int('twenty')\n\n# FIXED\nage = int('20')"},
+    {id:"AttributeError",lang:"Python",pattern:["AttributeError","has no attribute"],title:"AttributeError",plain:"The object doesn't have that property.",broke:"Tried to access a property that doesn't exist.",why:"Typo in property name. Object is None. Wrong object type.",fix:"Check the object type. Verify the property name. Use hasattr().",code:"# WRONG\ntext = 'hello'\nprint(text.length)\n\n# FIXED\nprint(len(text))"},
+    
+    // JAVASCRIPT
+    {id:"TypeError_JS",lang:"JavaScript",pattern:["TypeError","is not a function"],title:"TypeError: is not a function",plain:"You tried to call something that isn't a function.",broke:"Used parentheses on a non-function.",why:"Typo in function name. Forgot to define function. Variable overwrote function.",fix:"Check spelling. Make sure function is defined. Use typeof to check type.",code:"// WRONG\nconst x = 5;\nconst result = x();\n\n// FIXED\nconst myFunc = () => 5;\nconst result = myFunc();"},
+    {id:"ReferenceError_JS",lang:"JavaScript",pattern:["ReferenceError","is not defined"],title:"ReferenceError",plain:"You used a variable that doesn't exist.",broke:"Variable not declared or out of scope.",why:"Typo. Using before declaration. Out of scope.",fix:"Declare with let, const, or var before using. Check spelling.",code:"// WRONG\nconsole.log(userName);\n\n// FIXED\nconst userName = 'John';\nconsole.log(userName);"},
+    {id:"SyntaxError_JS",lang:"JavaScript",pattern:["SyntaxError"],title:"SyntaxError",plain:"Your code breaks JavaScript grammar.",broke:"Missing braces, wrong punctuation, unclosed strings.",why:"Missing semicolons, braces, or parentheses. Unclosed strings.",fix:"Check for matching braces {}. Close all strings and parentheses.",code:"// WRONG\nif (x > 5 {\n  console.log(x);\n\n// FIXED\nif (x > 5) {\n  console.log(x);\n}"},
+    {id:"NullPointerException_JS",lang:"JavaScript",pattern:["Cannot read","undefined"],title:"Cannot read properties of null",plain:"You tried to use something that is null or undefined.",broke:"Accessing property on null/undefined.",why:"Variable not initialized. Function returned null. Variable was deleted.",fix:"Check if null/undefined before using: if (x !== null).",code:"// WRONG\nlet user = null;\nlet name = user.name;\n\n// FIXED\nlet user = { name: 'John' };\nlet name = user.name;"},
+    
+    // JAVA
+    {id:"NullPointerException",lang:"Java",pattern:["NullPointerException","at java.lang"],title:"NullPointerException",plain:"You used something that is null.",broke:"Calling method on null object.",why:"Forgot to initialize. Method returned null.",fix:"Initialize objects. Check for null: if (obj != null).",code:"// WRONG\nString name = null;\nint len = name.length();\n\n// FIXED\nString name = \"John\";\nint len = name.length();"},
+    {id:"ArrayIndexOutOfBounds",lang:"Java",pattern:["ArrayIndexOutOfBoundsException"],title:"ArrayIndexOutOfBoundsException",plain:"You accessed an array index that doesn't exist.",broke:"Array index out of range.",why:"Wrong index. Beyond array length.",fix:"Check index < array.length. Remember: 0-indexed.",code:"// WRONG\nint[] nums = {1, 2, 3};\nint x = nums[3];\n\n// FIXED\nint x = nums[2];"},
+    {id:"ClassNotFoundException",lang:"Java",pattern:["ClassNotFoundException"],title:"ClassNotFoundException",plain:"Java can't find the class you're importing.",broke:"Class not in classpath.",why:"Class doesn't exist. Wrong package name. Not compiled.",fix:"Check class name. Verify package. Compile your code.",code:"// WRONG\nimport com.myapp.NonExistent;\n\n// FIXED - Make sure class exists in that package"},
+    
+    // COMMON ERRORS
+    {id:"FileNotFound",lang:["Python","Java"],pattern:["FileNotFound","No such file","cannot find"],title:"FileNotFoundError",plain:"The file doesn't exist at that location.",broke:"File doesn't exist at the path specified.",why:"Wrong path. File in different directory. File deleted. Typo.",fix:"Check path exists. Use absolute path if needed. Create file if missing.",code:"# WRONG\nwith open('data.txt') as f:\n    content = f.read()\n\n# FIXED\nimport os\nif os.path.exists('data.txt'):\n    with open('data.txt') as f:\n        content = f.read()"},
+    {id:"PermissionError",lang:"Python",pattern:["PermissionError","permission denied"],title:"PermissionError",plain:"You don't have permission to access that file.",broke:"File permissions prevent access.",why:"File is read-only. User doesn't have permission.",fix:"Check file permissions. Change permissions if needed.",code:"# Make sure you have read permission on the file\n# Linux/Mac: chmod u+r filename\n# Windows: Right-click > Properties > Security"},
+    {id:"RuntimeError",lang:["Python","Java"],pattern:["RuntimeError","runtime error"],title:"RuntimeError",plain:"Something went wrong while running your code.",broke:"Unspecified runtime error.",why:"Various causes. Check error message carefully.",fix:"Read the full error message. Look for the actual problem.",code:"# RuntimeErrors vary. Read the error message for details"}
+  ];
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s).replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c])); }
+
+  var pageIntro = $('eterr-page-intro');
+  var pageTool = $('eterr-page-tool');
+  var startBtn = $('eterr-start');
+  var backBtn = $('eterr-back');
+  var textInput = $('eterr-input');
+  var charcount = $('eterr-charcount');
+  var exampleBtn = $('eterr-example-btn');
+  var submitBtn = $('eterr-submit');
+  var status = $('eterr-status');
+  var resultBox = $('eterr-result');
+  var tabs = Array.from(document.querySelectorAll('.eterr-tab'));
+  var modes = {text: $('eterr-mode-text'), screenshot: $('eterr-mode-screenshot'), file: $('eterr-mode-file')};
+  var activeMode = 'text';
+  var selectedLanguage = 'auto';
+  var screenshotText = '';
+  var fileText = '';
+
+  // Language selector
+  var langBtn = $('eterr-lang-btn');
+  var langDropdown = $('eterr-lang-dropdown');
+  var langOptions = Array.from(document.querySelectorAll('.eterr-lang-option'));
+
+  langBtn.addEventListener('click', () => {
+    langDropdown.style.display = langDropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  langOptions.forEach(opt => {
+    opt.addEventListener('click', () => {
+      selectedLanguage = opt.dataset.lang;
+      langBtn.textContent = selectedLanguage === 'auto' ? 'Auto-detect' : selectedLanguage;
+      langOptions.forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      langDropdown.style.display = 'none';
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if(!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+      langDropdown.style.display = 'none';
+    }
+  });
+
+  // Navigation
+  startBtn.addEventListener('click', () => {
+    pageIntro.classList.remove('active');
+    pageTool.classList.add('active');
+  });
+  backBtn.addEventListener('click', () => {
+    pageTool.classList.remove('active');
+    pageIntro.classList.add('active');
+  });
+
+  // Tabs
+  tabs.forEach((tab, idx) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      Object.values(modes).forEach(m => m.classList.remove('active'));
+      activeMode = tab.dataset.mode;
+      modes[activeMode].classList.add('active');
+      resultBox.innerHTML = '';
+    });
+  });
+
+  // Character counter
+  textInput.addEventListener('input', () => {
+    var len = textInput.value.length;
+    charcount.textContent = len.toLocaleString() + ' / 5,000';
+  });
+
+  // Examples by language
+  var examples = {
+    'auto': "Traceback (most recent call last):\n  File \"main.py\", line 3\n    print(hello)\nNameError: name 'hello' is not defined",
+    'Python': "Traceback (most recent call last):\n  File \"script.py\", line 5, in <module>\n    result = items[10]\nIndexError: list index out of range",
+    'JavaScript': "TypeError: Cannot read properties of undefined (reading 'name')\n  at myFunction (main.js:8:5)",
+    'Java': "Exception in thread \"main\" java.lang.NullPointerException\n  at MyClass.main(MyClass.java:15)"
+  };
+
+  exampleBtn.addEventListener('click', () => {
+    var lang = selectedLanguage === 'auto' ? 'auto' : selectedLanguage;
+    textInput.value = examples[lang] || examples['auto'];
+    textInput.dispatchEvent(new Event('input'));
+    textInput.focus();
+  });
+
+  // Screenshot upload
+  var screenshotZone = $('eterr-screenshot-zone');
+  var screenshotInput = $('eterr-screenshot-input');
+  var screenshotPreview = $('eterr-screenshot-preview');
+
+  screenshotZone.addEventListener('click', () => screenshotInput.click());
+  screenshotZone.addEventListener('dragover', (e) => { e.preventDefault(); screenshotZone.style.borderColor = 'var(--teal)'; });
+  screenshotZone.addEventListener('dragleave', () => { screenshotZone.style.borderColor = 'var(--line)'; });
+  screenshotZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    screenshotZone.style.borderColor = 'var(--line)';
+    var file = e.dataTransfer.files[0];
+    if(file && file.type.startsWith('image/')) handleScreenshot(file);
+  });
+
+  screenshotInput.addEventListener('change', (e) => {
+    if(e.target.files[0]) handleScreenshot(e.target.files[0]);
+  });
+
+  function handleScreenshot(file) {
+    var reader = new FileReader();
+    reader.onload = (e) => {
+      screenshotPreview.innerHTML = '<img src="' + e.target.result + '" style="max-width:100%; border:1px solid var(--line); border-radius:6px;">';
+      // Show message that text needs to be extracted manually
+      status.textContent = 'Screenshot loaded. Use OCR tool or copy error text manually.';
+      status.classList.remove('err');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // File upload
+  var fileZone = $('eterr-file-zone');
+  var fileInput = $('eterr-file-input');
+  var fileContent = $('eterr-file-content');
+  var filePythonBtn = $('eterr-file-python-btn');
+  var fileJavaBtn = $('eterr-file-java-btn');
+
+  fileZone.addEventListener('click', () => fileInput.click());
+  fileZone.addEventListener('dragover', (e) => { e.preventDefault(); fileZone.style.borderColor = 'var(--teal)'; });
+  fileZone.addEventListener('dragleave', () => { fileZone.style.borderColor = 'var(--line)'; });
+  fileZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileZone.style.borderColor = 'var(--line)';
+    var file = e.dataTransfer.files[0];
+    if(file) handleFile(file);
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if(e.target.files[0]) handleFile(e.target.files[0]);
+  });
+
+  function handleFile(file) {
+    var reader = new FileReader();
+    reader.onload = (e) => {
+      fileText = e.target.result;
+      fileContent.innerHTML = '<p style="font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin:0; padding:10px; background:var(--paper); border-radius:6px; max-height:150px; overflow-y:auto; white-space:pre-wrap; word-break:break-word;">File loaded: ' + file.name + ' (' + fileText.length + ' chars)</p>';
+      status.textContent = 'File loaded. Click "Find explanation" to analyze.';
+      status.classList.remove('err');
+    };
+    reader.readAsText(file);
+  }
+
+  filePythonBtn.addEventListener('click', () => {
+    fileText = 'Traceback (most recent call last):\n  File "script.py", line 10, in <module>\n    result = compute(data)\n  File "script.py", line 5, in compute\n    return items[index]\nIndexError: list index out of range';
+    fileContent.innerHTML = '<p style="font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin:0; padding:10px; background:var(--paper); border-radius:6px;">Example Python error loaded</p>';
+    status.textContent = 'Example loaded. Click "Find explanation" to analyze.';
+    status.classList.remove('err');
+  });
+
+  fileJavaBtn.addEventListener('click', () => {
+    fileText = 'Exception in thread "main" java.lang.NullPointerException\n  at MyClass.processUser(MyClass.java:25)\n  at MyClass.main(MyClass.java:10)';
+    fileContent.innerHTML = '<p style="font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin:0; padding:10px; background:var(--paper); border-radius:6px;">Example Java error loaded</p>';
+    status.textContent = 'Example loaded. Click "Find explanation" to analyze.';
+    status.classList.remove('err');
+  });
+
+  // Find error (filter by language if selected)
+  function findError(text) {
+    text = text.toLowerCase();
+    return errorDB.find(e => {
+      var patternMatch = e.pattern.some(p => text.includes(p.toLowerCase()));
+      var langMatch = selectedLanguage === 'auto' || (Array.isArray(e.lang) ? e.lang.includes(selectedLanguage) : e.lang === selectedLanguage);
+      return patternMatch && langMatch;
+    }) || null;
+  }
+
+  // Copy text
+  function copyText(txt, btn) {
+    if(navigator.clipboard) {
+      navigator.clipboard.writeText(txt).then(() => {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+      });
+    } else {
+      status.textContent = 'Copy not supported';
+    }
+  }
+
+  window.copyText = copyText;
+
+  // Render result
+  function renderResult(err) {
+    var html = `
+      <div class="eterr-specimen">
+        <div class="eterr-specimen-head">
+          <div class="eterr-stamp">FOUND</div>
+          <p class="eterr-species">${esc(err.title)}</p>
+          <p class="eterr-plain">${esc(err.plain)}</p>
+        </div>
+        <div class="eterr-section"><h3>What broke</h3><p>${esc(err.broke)}</p></div>
+        <div class="eterr-section"><h3>Why it happens</h3><p>${esc(err.why)}</p></div>
+        <div class="eterr-section"><h3>How to fix it</h3><p>${esc(err.fix)}</p>
+          <div class="eterr-code-wrap"><pre class="eterr-code">${esc(err.code)}</pre><button class="eterr-copy-code" data-code="${esc(err.code)}">Copy</button></div>
+        </div>
+      </div>
+    `;
+    resultBox.innerHTML = html;
+    
+    // Add copy handler
+    var copyBtn = resultBox.querySelector('.eterr-copy-code');
+    if(copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        copyText(this.dataset.code, this);
+      });
+    }
+    
+    resultBox.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  }
+
+  // Submit
+  submitBtn.addEventListener('click', () => {
+    var text = '';
+    if(activeMode === 'text') {
+      text = textInput.value.trim();
+      if(!text) { status.textContent = 'Paste an error.'; status.classList.add('err'); return; }
+    } else if(activeMode === 'file') {
+      text = fileText.trim();
+      if(!text) { status.textContent = 'Upload or select a file.'; status.classList.add('err'); return; }
+    } else if(activeMode === 'screenshot') {
+      status.textContent = 'Screenshot mode: Please manually copy the error text and paste it in Text mode.';
+      status.classList.add('err');
+      return;
+    }
+    status.classList.remove('err');
+    
+    var err = findError(text);
+    if(err) {
+      status.textContent = '';
+      renderResult(err);
+    } else {
+      status.textContent = 'Error not found in database.';
+      status.classList.add('err');
+    }
+  });
+
+  textInput.addEventListener('keydown', (e) => {
+    if((e.metaKey || e.ctrlKey) && e.key === 'Enter') submitBtn.click();
+  });
+})();
+</script>
